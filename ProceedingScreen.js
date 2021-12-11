@@ -14,16 +14,16 @@ import {useClipboard} from '@react-native-community/clipboard';
 import Colors from './Colors';
 
 
-const ProceedingScreen = ({navigation}) => {
+const ProceedingScreen = ({navigation, route}) => {
   const isDarkMode = useColorScheme() === 'dark';
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
   const [copy, setCopy] = useClipboard();
 
-  const [findings, setFindings] = useState(`
-  Every Day is a Blessing.
-  `)
+  const [findings, setFindings] = useState(
+  route.params.findingsKey
+  )
 
   return (
     <Fragment>

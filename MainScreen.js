@@ -12,8 +12,9 @@ import {
 } from 'react-native';
 import Colors from './Colors';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import Config from './Config.json';
 
-const MainScreen = ({navigation}) => {
+const MainScreen = ({ navigation }) => {
   const isDarkMode = useColorScheme() === 'dark';
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -21,11 +22,7 @@ const MainScreen = ({navigation}) => {
 
   const [able, setAble] = useState(false);
 
-  const [state,setState] = useState([{
-    filepath: {
-      data: '',
-      uri: ''
-    },
+  const [state, setState] = useState([{
     fileData: '',
     fileUri: ''
   }]);
@@ -46,6 +43,7 @@ const MainScreen = ({navigation}) => {
 
   const openCamera = () => {
     let options = {
+      includeBase64: true,
       storageOptions: {
         skipBackup: true,
         path: 'images',
@@ -57,9 +55,10 @@ const MainScreen = ({navigation}) => {
       } else if (response.errorCode) {
         console.log('ImagePicker Error: ', response.errorMessage);
       } else {
-        console.log('response', response);
+        // console.log('response', response);
         setState({
-          fileUri: response.assets[0].uri
+          fileUri: response.assets[0].uri,
+          fileData: response.assets[0].base64
         });
         setAble(
           true
@@ -70,6 +69,7 @@ const MainScreen = ({navigation}) => {
 
   const openGallery = () => {
     let options = {
+      includeBase64: true,
       storageOptions: {
         skipBackup: true,
         path: 'images',
@@ -81,9 +81,10 @@ const MainScreen = ({navigation}) => {
       } else if (response.errorCode) {
         console.log('ImagePicker Error: ', response.errorMessage);
       } else {
-        console.log('response', response);
+        // console.log('response', response);
         setState({
-          fileUri: response.assets[0].uri
+          fileUri: response.assets[0].uri,
+          fileData: response.assets[0].base64
         });
         setAble(
           true
@@ -97,12 +98,26 @@ const MainScreen = ({navigation}) => {
       return (
         <View style={styles.nextSection}>
           <TouchableOpacity
-            onPress={() => navigation.navigate('Search')}
+            onPress={() =>
+              {
+              fetch(`${Config.BASE_URI}/`, {
+                method: 'POST',
+                body: state.fileUri
+              })
+              .then(response => response.text())
+              .then((responseText) => {
+                  navigation.navigate('Search', {
+                  findingsKey:responseText,
+                })
+              })
+                .catch(error => console.log(error))
+              }
+            }
             style={styles.btnSection}
           >
             <Text style={styles.btnText}>Proceed</Text>
           </TouchableOpacity>
-        </View>
+        </View >
       )
     }
     else {
