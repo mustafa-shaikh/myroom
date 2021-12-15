@@ -102,7 +102,7 @@ const MainScreen = ({ navigation }) => {
               {
               fetch(`${Config.BASE_URI}/`, {
                 method: 'POST',
-                body: state.fileUri
+                body: state.fileData
               })
               .then(response => response.text())
               .then((responseText) => {
