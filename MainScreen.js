@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -11,35 +11,33 @@ import {
   View,
 } from 'react-native';
 import Colors from './Colors';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import Config from './Config.json';
 
-const MainScreen = ({ navigation }) => {
+const MainScreen = ({navigation}) => {
   const isDarkMode = useColorScheme() === 'dark';
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
-  const [able, setAble] = useState(false);
+  const [able, setAble] = useState(true);
 
-  const [state, setState] = useState([{
-    fileData: '',
-    fileUri: ''
-  }]);
+  const [state, setState] = useState([
+    {
+      fileData: '',
+      fileUri: '',
+    },
+  ]);
 
   const renderFileUri = () => {
     if (state.fileUri) {
-      return <Image
-        source={{ uri: state.fileUri }}
-        style={styles.images}
-      />
+      return <Image source={{uri: state.fileUri}} style={styles.images} />;
     } else {
-      return <Image
-        source={require('./assets/01.jpg')}
-        style={styles.images}
-      />
+      return (
+        <Image source={require('./assets/01.jpg')} style={styles.images} />
+      );
     }
-  }
+  };
 
   const openCamera = () => {
     let options = {
@@ -49,7 +47,7 @@ const MainScreen = ({ navigation }) => {
         path: 'images',
       },
     };
-    launchCamera(options, (response) => {
+    launchCamera(options, response => {
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.errorCode) {
@@ -58,14 +56,12 @@ const MainScreen = ({ navigation }) => {
         // console.log('response', response);
         setState({
           fileUri: response.assets[0].uri,
-          fileData: response.assets[0].base64
+          fileData: response.assets[0].base64,
         });
-        setAble(
-          true
-        )
+        setAble(true);
       }
     });
-  }
+  };
 
   const openGallery = () => {
     let options = {
@@ -75,7 +71,7 @@ const MainScreen = ({ navigation }) => {
         path: 'images',
       },
     };
-    launchImageLibrary(options, (response) => {
+    launchImageLibrary(options, response => {
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.errorCode) {
@@ -84,51 +80,40 @@ const MainScreen = ({ navigation }) => {
         // console.log('response', response);
         setState({
           fileUri: response.assets[0].uri,
-          fileData: response.assets[0].base64
+          fileData: response.assets[0].base64,
         });
-        setAble(
-          true
-        )
+        setAble(true);
       }
     });
-  }
+  };
 
   const ViewNext = () => {
     if (able) {
       return (
         <View style={styles.nextSection}>
           <TouchableOpacity
-            onPress={() =>
-              {
+            onPress={() => {
               fetch(`${Config.BASE_URI}/`, {
                 method: 'POST',
-                body: state.fileUri
+                body: state.fileData,
               })
-              .then(response => response.text())
-              .then((responseText) => {
+                .then(response => response.text())
+                .then(responseText => {
                   navigation.navigate('Search', {
-                  findingsKey:responseText,
+                    findingsKey: responseText,
+                  });
                 })
-              })
-                .catch(error => console.log(error))
-              }
-            }
-            style={styles.btnSection}
-          >
+                .catch(error => console.log(error));
+            }}
+            style={styles.btnSection}>
             <Text style={styles.btnText}>Proceed</Text>
           </TouchableOpacity>
-        </View >
-      )
-    }
-    else {
-      return (
-        <View>
-
         </View>
-      )
+      );
+    } else {
+      return <View></View>;
     }
-  }
-
+  };
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -136,14 +121,15 @@ const MainScreen = ({ navigation }) => {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
-
         {/* Description */}
         <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
           <Text style={styles.sectionDescription}>
-            Capture from <Text style={styles.highlight}>Camera</Text> or Select from <Text style={styles.highlight}>Gallery</Text> to Extract the <Text style={styles.highlight}>Text</Text>
+            Capture from <Text style={styles.highlight}>Camera</Text> or Select
+            from <Text style={styles.highlight}>Gallery</Text> to Extract the{' '}
+            <Text style={styles.highlight}>Text</Text>
           </Text>
         </View>
 
@@ -151,7 +137,7 @@ const MainScreen = ({ navigation }) => {
         <View style={styles.imageSection}>
           <View>
             {renderFileUri()}
-            <Text style={{ textAlign: 'center' }}>Image</Text>
+            <Text style={{textAlign: 'center'}}>Image</Text>
           </View>
         </View>
 
@@ -159,15 +145,13 @@ const MainScreen = ({ navigation }) => {
         <View style={styles.btnParentSection}>
           <TouchableOpacity
             onPress={() => openCamera()}
-            style={styles.btnSection}
-          >
+            style={styles.btnSection}>
             <Text style={styles.btnText}>Camera</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => openGallery()}
-            style={styles.btnSection}
-          >
+            style={styles.btnSection}>
             <Text style={styles.btnText}>Gallery</Text>
           </TouchableOpacity>
         </View>
@@ -199,18 +183,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 8,
     paddingVertical: 8,
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   images: {
     width: 150,
     height: 150,
     borderColor: 'black',
     borderWidth: 1,
-    marginHorizontal: 3
+    marginHorizontal: 3,
   },
   btnParentSection: {
     alignItems: 'center',
-    marginTop: 10
+    marginTop: 10,
   },
   btnSection: {
     width: 225,
@@ -219,16 +203,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 3,
-    marginBottom: 10
+    marginBottom: 10,
   },
   btnText: {
     textAlign: 'center',
     fontSize: 14,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   nextSection: {
     alignItems: 'center',
-    bottom: 0
+    bottom: 0,
   },
 });
 
